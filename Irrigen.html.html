@@ -1,0 +1,40 @@
+<!DOCTYPE html>
+<html lang="es">
+<head>
+<meta charset="UTF-8">
+<title>IRRIGEN App</title>
+<style>
+body{background:#e8f5e9;font-family:Arial;color:#1b5e20;text-align:center;}
+.card{max-width:400px;margin:40px auto;padding:20px;border-radius:20px;box-shadow:0 0 10px #999;}
+h2{color:#2e7d32;}
+</style>
+</head>
+<body>
+<div class="card" id="panel">Cargando datos...</div>
+
+<script>
+async function actualizar(){
+  const url="https://api.thingspeak.com/channels/3121036/feeds.json?results=1&api_key=F0V70T5DVGC9A7DD";
+  const r=await fetch(url); const d=await r.json(); const x=d.feeds[0];
+  const T=Number(x.field1).toFixed(1);
+  const H=Number(x.field2).toFixed(1);
+  const Hs=Number(x.field3).toFixed(1);
+  const L=x.field4=="1"?"🌧 Llueve":"☀️ Seco";
+  const N=Number(x.field5).toFixed(1);
+  const R=x.field6=="1"?"💧 Regando...":"🌿 En reposo";
+  const suelo=Hs<40?"🌾 Seco":"💚 Húmedo";
+  const tanque=N<30?"⚠️ Bajo":"🟦 Lleno";
+  document.getElementById("panel").innerHTML=`
+    <h2>🌿 SISTEMA IRRIGEN 🌿</h2>
+    <p><b>🌡 Temperatura:</b> ${T} °C</p>
+    <p><b>💨 Humedad aire:</b> ${H}%</p>
+    <p><b>🌱 Humedad suelo:</b> ${suelo} (${Hs}%)</p>
+    <p><b>☁️ Clima:</b> ${L}</p>
+    <p><b>🪣 Nivel tanque:</b> ${tanque} (${N}%)</p>
+    <p><b>🪴 Estado:</b> ${R}</p>`;
+}
+actualizar();
+setInterval(actualizar,15000);
+</script>
+</body>
+</html>
